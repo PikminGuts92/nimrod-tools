@@ -1,0 +1,40 @@
+[workspace]
+members = [
+    "apps/cli/*",
+    #"apps/ui/*",
+    #"core/*",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.0.1"
+authors = ["PikminGuts92"]
+edition = "2021"
+
+[workspace.dependencies]
+clap = { version = "4.5.4", features = ["derive"] }
+grim = { git = "https://github.com/PikminGuts92/grim.git", features = [ "midi", "model" ], branch = "dev" }
+log = "0.4.21"
+serde = { version = "1.0.200", features = ["derive"] }
+serde_json = "1.0.116"
+simplelog = "0.12.2"
+thiserror = "1.0.60"
+
+# dev-dependencies
+criterion = "0.5.1"
+rstest = "0.19.0"
+
+[workspace.lints.rust]
+dead_code = "allow"
+deprecated = "allow"
+unused_assignments = "allow"
+unused_imports = "allow"
+
+[profile.dev.package."*"]
+opt-level = 3
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = 'z' # Optimize for size
+strip = true
