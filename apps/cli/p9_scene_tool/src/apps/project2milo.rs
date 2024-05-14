@@ -296,6 +296,10 @@ fn load_midi(project_dir: &Path, is_gdrb: bool) -> Option<Object> {
 fn load_track(track: &MidiTrack, properties: &[(&str, u32, Option<&str>, u32, fn() -> PropKeysEvents)]) -> Vec<PropKeys> {
     let mut prop_keys = HashMap::new(); // property -> keys
     let track_name = track.name.as_ref().map(|n| n.as_str()).unwrap_or("???");
+    let property_map = HashMap::from([
+        ("cfg", "configuration"),
+        ("config", "configuration"),
+    ]);
 
     for ev in track.events.iter() {
         let (_pos, _pos_realtime, text) = match ev {
@@ -312,10 +316,11 @@ fn load_track(track: &MidiTrack, properties: &[(&str, u32, Option<&str>, u32, fn
 
         let parsed_text = if let Some(parsed) = FormattedAnimEvent::try_from_str(text) { parsed } else { continue; };
         let property = parsed_text.get_property();
+        let mapped_property = property_map.get(property).map(|p| *p).unwrap_or(property);
 
-        if !prop_keys.contains_key(property) {
+        if !prop_keys.contains_key(mapped_property) {
             // Validate property
-            match properties.iter().find(|(p, ..)| p.eq(&parsed_text.get_property())) {
+            match properties.iter().find(|(p, ..)| p.eq(&mapped_property)) {
                 Some((property, interpolation, interp_handler, unk_enum, init_events)) => {
                     // Create and insert new prop key
                     prop_keys.insert(*property, PropKeys {
@@ -327,8 +332,8 @@ fn load_track(track: &MidiTrack, properties: &[(&str, u32, Option<&str>, u32, fn
                         interp_handler: interp_handler
                             .map(|h| h.to_string())
                             .unwrap_or_default(),
-                            unknown_enum: *unk_enum,
-                            events: init_events()
+                        unknown_enum: *unk_enum,
+                        events: init_events()
                     });
                 },
                 _ => {
@@ -340,7 +345,7 @@ fn load_track(track: &MidiTrack, properties: &[(&str, u32, Option<&str>, u32, fn
             };
         }
 
-        let key = prop_keys.get_mut(property).unwrap();
+        let key = prop_keys.get_mut(mapped_property).unwrap();
         let pos = ((ev.get_pos_realtime().unwrap() * 30.) / 1000.) as f32; // TODO: Probably make fps a variable
 
         match &mut key.events {
