@@ -1,7 +1,7 @@
 [workspace]
 members = [
     "apps/cli/*",
-    #"apps/ui/*",
+    "apps/gui/*",
     #"core/*",
 ]
 resolver = "2"
