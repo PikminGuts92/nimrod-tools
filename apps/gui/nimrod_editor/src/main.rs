@@ -15,7 +15,11 @@ use iced::{Application, Color, Command, Element, Font, Length, Pixels, Sandbox, 
 pub fn main() -> iced::Result {
     tracing_subscriber::fmt::init();
 
-    NimrodEditor::run(Settings::default())
+    let settings = Settings {
+        ..Default::default()
+    };
+
+    NimrodEditor::run(settings)
 }
 
 pub struct NimrodEditor {}
