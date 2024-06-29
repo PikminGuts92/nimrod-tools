@@ -5,6 +5,7 @@ use iced::alignment::{self, Alignment};
 use iced::executor;
 use iced::theme;
 use iced::widget::{
+    button,
     checkbox, column, container, horizontal_space, radio, row,
     scrollable, slider, text, text_input, toggler, vertical_space,
 };
@@ -43,7 +44,10 @@ impl Application for NimrodEditor {
     }
 
     fn view(&self) -> Element<'_, Self::Message, Self::Theme, iced::Renderer> {
-        "Hey, nimrod!".into()
+        column![
+            button("hey"),
+            text("Hey, nimrod!")
+        ].into()
     }
 
     fn theme(&self) -> Self::Theme {
